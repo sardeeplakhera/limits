@@ -58,7 +58,10 @@
                     };
                     request.onsuccess = function (event) {
                         // console.log('%c js: entry added successfully! ', 'background: #222; color: #bada55');
-
+                        
+                        let msg = document.createElement('p');
+                        msg.innerHTML = 'entry added successfully';
+                        document.body.appendChild(msg);
                     };
                 } catch (error) {
                     let msg = document.createElement('p');
