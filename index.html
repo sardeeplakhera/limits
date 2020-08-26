@@ -45,16 +45,27 @@
 
             var objectStore = transaction.objectStore("ImageStore");
             for (let i = 1; i <= 1; i++) {
-                var request = objectStore.put(record);
-                // console.log('%c js: add request for ', 'background: green; color: #bada55', start);
-                request.onerror = function (event) {
-                    console.error("js", event.result, ": entry couldn't be added " + event.target.error);
-                };
-                request.onsuccess = function (event) {
-                    // console.log('%c js: entry added successfully! ', 'background: #222; color: #bada55');
+                try {
+                    
+                    
+                    var request = objectStore.put(record);
+                    // console.log('%c js: add request for ', 'background: green; color: #bada55', start);
+                    request.onerror = function (event) {
+                        console.error("js", event.result, ": entry couldn't be added " + event.target.error);
+                        let msg = document.createElement('p');
+                        msg.innerHTML = event.target.error;
+                        document.body.appendChild(msg);
+                    };
+                    request.onsuccess = function (event) {
+                        // console.log('%c js: entry added successfully! ', 'background: #222; color: #bada55');
 
-                };
-            }
+                    };
+                } catch (error) {
+                    let msg = document.createElement('p');
+                    msg.innerHTML = error;
+                    document.body.appendChild(msg);
+                }
+        }
         };
 
 
