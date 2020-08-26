@@ -1,0 +1,104 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndexedDB: ImageStore</title>
+
+    <script>   
+        var db,
+            currentVersion = 1;
+        const createDB = () => {
+            var request = window.indexedDB.open("db1", currentVersion);
+            request.onerror = function (event) {
+                console.log("createDb: DB open failed:", event.target.error);
+            };
+            request.onsuccess = function (event) {
+                db = event.target.result;
+                console.log("createDb: DB open successful with version:", currentVersion);
+
+                db.onversionchange = function (event) {
+                    // console.log('a database change has occurred');
+                };
+            };
+            request.onupgradeneeded = function (event) {
+                db = event.target.result;
+                db.createObjectStore("ImageStore", { keyPath: "id", autoIncrement:true });
+
+            };
+        };
+
+        const closeDB = () => {
+            console.log("close DB");
+            db.close();
+        };
+
+        const storeData = (numOfRecords) => {   
+        
+            var transaction = db.transaction(["ImageStore"], "readwrite");
+            transaction.oncomplete = function (event) {
+                console.log("transaction successful");
+            };
+
+            transaction.onerror = function (event) {
+                console.log("transaction failed", event.target.error);
+            };
+
+            var objectStore = transaction.objectStore("ImageStore");
+            for (let i = 1; i <= 1; i++) {
+                var request = objectStore.put(record);
+                // console.log('%c js: add request for ', 'background: green; color: #bada55', start);
+                request.onerror = function (event) {
+                    console.error("js", event.result, ": entry couldn't be added " + event.target.error);
+                };
+                request.onsuccess = function (event) {
+                    // console.log('%c js: entry added successfully! ', 'background: #222; color: #bada55');
+
+                };
+            }
+        };
+
+
+    const clearDB = () => {
+        var transaction = db.transaction("ImageStore", "readwrite");
+        transaction.oncomplete = function (event) {
+            console.log("delete transaction successful");
+        };
+        var objectStore = transaction.objectStore("ImageStore");
+        var req = objectStore.clear();
+        req.onsuccess = function (event) {
+            console.log("all entries deleted");
+        };
+    };
+
+    const deleteDB = () => {
+        var DBDeleteRequest = indexedDB.deleteDatabase("db1");
+
+        DBDeleteRequest.onerror = function (event) {
+            console.log("Error deleting database.");
+        };
+        DBDeleteRequest.onsuccess = function (event) {
+            console.log("Database deleted successfully");
+        };
+    };
+    var x = 'x'.repeat(50*1024*1024);
+    var record = {};
+    generate = () => {
+        let num = document.getElementById('num').value || 10;
+        console.log(num);
+        for (let i =0; i<num; i++) {
+            record[i] = x;
+        }
+    }
+    </script>
+</head>
+<body>
+    <div><button onclick="createDB()">Open DB</button></div>
+    <div><button onclick="closeDB()">Close DB</button></div>
+    <div><button onclick="storeData()">Add 500 MB data</button></div>
+    <div><button onclick="clearDB()">Clear all records</button></div>
+    <div><button onclick="deleteDB()">Delete DB</button></div>
+    <div>
+        <input id="num"/>
+        <button onclick="generate()">generate str</button></div>
+</body>
+</html>
